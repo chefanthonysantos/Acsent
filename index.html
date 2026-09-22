@@ -74,6 +74,36 @@
     .navbtn{background:#1d1d21;color:#d4d4d8;border:none;border-radius:14px;padding:10px 6px;font-size:12px}
     .streak{color:#ffb45c}
     .note{font-size:13px;color:var(--muted);line-height:1.45}
+
+    .mission-top{
+      display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center
+    }
+    .phase-pill{
+      display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;
+      background:#1d1d21;border:1px solid #34343a;font-size:12px;color:#d4d4d8
+    }
+    .task-edit{flex:1;min-width:0}
+    .task-edit .input{padding:10px 11px}
+    .task-name{font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.7px}
+    .chips{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:8px}
+    .chip{
+      border:1px solid #303036;background:#101012;color:#d4d4d8;border-radius:12px;padding:10px 4px;
+      text-align:center;font-weight:700
+    }
+    .chip.active{border-color:var(--good);background:#13241b;color:#b8ffd6}
+    .textarea{min-height:78px;resize:vertical}
+    .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .status-line{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:9px}
+    .status-good{color:#7ef0af}
+    .status-warn{color:#f6c85f}
+    .week-badge{
+      border:1px solid #34343a;background:#101012;border-radius:14px;padding:10px 12px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px
+    }
+    .extra-row{display:flex;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid #222226}
+    .extra-row:last-child{border-bottom:none}
+    .extra-row input[type="checkbox"]{width:20px;height:20px;accent-color:var(--good)}
+    .delete-mini{border:none;background:#251719;color:#ff9d9d;border-radius:10px;padding:7px 9px}
     @media(max-width:500px){.hero-grid{grid-template-columns:1fr}.ring{margin:auto}.grid{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -128,12 +158,79 @@
   </section>
 
   <section class="card section">
-    <h3>Today's commitments</h3>
-    <div class="task"><input type="checkbox" id="t1"><div><div>Train / gym</div><div class="label">Protect the routine.</div></div></div>
-    <div class="task"><input type="checkbox" id="t2"><div><div>Revenue-producing action</div><div class="label">Calls, follow-ups, deposit asks, outreach.</div></div></div>
-    <div class="task"><input type="checkbox" id="t3"><div><div>Move the business forward</div><div class="label">Automation, content, systems, offer improvement.</div></div></div>
-    <div class="task"><input type="checkbox" id="t4"><div><div>Personal win</div><div class="label">Something that improves your life outside work.</div></div></div>
-    <div class="task"><input type="checkbox" id="t5"><div><div>Close the day intentionally</div><div class="label">Review numbers and set tomorrow's target.</div></div></div>
+    <div class="mission-top">
+      <div>
+        <div class="label">90-DAY CAPITAL ROADMAP</div>
+        <div class="big" style="font-size:24px;margin-top:4px">Day <span id="roadmapDay">1</span> / 90</div>
+      </div>
+      <div class="phase-pill" id="phasePill">Phase 1 • Foundation</div>
+    </div>
+    <div class="progress" style="margin-top:14px"><div class="bar" id="roadmapBar"></div></div>
+    <div class="status-line">
+      <div class="small" id="phaseFocus">Build relationships + seed deposits</div>
+      <div class="small" id="daysLeft90">89 days left</div>
+    </div>
+  </section>
+
+  <section class="card section">
+    <div class="mission-top">
+      <div>
+        <h3 style="margin-bottom:3px">Today's Mission</h3>
+        <div class="small">Five promises. No zero days.</div>
+      </div>
+      <div class="phase-pill"><span id="missionDone">0</span>/5 done</div>
+    </div>
+
+    <div class="task">
+      <input type="checkbox" id="t1">
+      <div class="task-edit">
+        <div class="task-name">Money move</div>
+        <input class="input" id="taskText1" value="Follow up with 10 warm 6FCS leads + ask for a deposit">
+      </div>
+    </div>
+
+    <div class="task">
+      <input type="checkbox" id="t2">
+      <div class="task-edit">
+        <div class="task-name">Capital move</div>
+        <input class="input" id="taskText2" value="Complete one credit union / funding action">
+      </div>
+    </div>
+
+    <div class="task">
+      <input type="checkbox" id="t3">
+      <div class="task-edit">
+        <div class="task-name">Business move</div>
+        <input class="input" id="taskText3" value="Improve one sales, automation, or operating system">
+      </div>
+    </div>
+
+    <div class="task">
+      <input type="checkbox" id="t4">
+      <div class="task-edit">
+        <div class="task-name">Body</div>
+        <input class="input" id="taskText4" value="Gym or at least 30 minutes of movement">
+      </div>
+    </div>
+
+    <div class="task">
+      <input type="checkbox" id="t5">
+      <div class="task-edit">
+        <div class="task-name">Mind</div>
+        <input class="input" id="taskText5" value="10-minute reset + write what matters today">
+      </div>
+    </div>
+
+    <button class="btn secondary" id="saveMission">Save today's mission</button>
+
+    <div style="margin-top:14px">
+      <div class="label">EXTRA TO-DOS</div>
+      <div class="money-row" style="margin-top:7px">
+        <input class="input" id="extraTaskInput" placeholder="Add something you can't forget">
+        <button class="btn" id="addExtraTask" style="margin-top:0">Add</button>
+      </div>
+      <div id="extraTasks"></div>
+    </div>
   </section>
 
   <section class="card section">
@@ -147,6 +244,87 @@
     <button class="btn secondary" id="saveGoals">Save today's goals</button>
   </section>
 
+
+  <section class="card section">
+    <h3>Mental Check-In</h3>
+    <div class="small">Track it. Don't judge it.</div>
+
+    <div class="label" style="margin-top:13px">MOOD</div>
+    <div class="chips" id="moodChips">
+      <button class="chip" data-mood="1">1</button>
+      <button class="chip" data-mood="2">2</button>
+      <button class="chip" data-mood="3">3</button>
+      <button class="chip" data-mood="4">4</button>
+      <button class="chip" data-mood="5">5</button>
+    </div>
+
+    <div class="label" style="margin-top:13px">ENERGY</div>
+    <div class="chips" id="energyChips">
+      <button class="chip" data-energy="1">1</button>
+      <button class="chip" data-energy="2">2</button>
+      <button class="chip" data-energy="3">3</button>
+      <button class="chip" data-energy="4">4</button>
+      <button class="chip" data-energy="5">5</button>
+    </div>
+
+    <div class="label" style="margin-top:13px">WHAT DO I NEED TODAY?</div>
+    <textarea class="input textarea" id="mindNote" placeholder="One honest sentence is enough."></textarea>
+    <button class="btn secondary" id="saveMind">Save check-in</button>
+  </section>
+
+  <section class="card section">
+    <h3>Physical Activity</h3>
+    <div class="mini-grid">
+      <div>
+        <div class="label">Activity</div>
+        <input class="input" id="activityType" placeholder="Gym, walk, run...">
+      </div>
+      <div>
+        <div class="label">Minutes</div>
+        <input class="input" id="activityMinutes" type="number" min="0" step="5" placeholder="30">
+      </div>
+    </div>
+    <div class="progress"><div class="bar" id="activityBar"></div></div>
+    <div class="status-line">
+      <div class="small">Daily baseline: 30 minutes</div>
+      <div class="small" id="activityStatus">0 / 30</div>
+    </div>
+    <button class="btn secondary" id="saveActivity">Save activity</button>
+  </section>
+
+  <section class="card section">
+    <div class="mission-top">
+      <div>
+        <h3 style="margin-bottom:3px">Weekly Social Event</h3>
+        <div class="small">One real event every week.</div>
+      </div>
+      <div class="phase-pill" id="socialStatus">0/1</div>
+    </div>
+
+    <div class="week-badge" style="margin-top:13px">
+      <div>
+        <div class="label">THIS WEEK</div>
+        <div id="weekRange" style="margin-top:3px"></div>
+      </div>
+      <div id="socialBadge" class="small status-warn">Not planned</div>
+    </div>
+
+    <div class="label" style="margin-top:13px">Event</div>
+    <input class="input" id="socialEvent" placeholder="Dinner, networking event, game, festival...">
+
+    <div class="label" style="margin-top:10px">Date</div>
+    <input class="input" id="socialDate" type="date">
+
+    <div class="task" style="padding-bottom:0;border-bottom:none">
+      <input type="checkbox" id="socialAttended">
+      <div>
+        <div>I showed up</div>
+        <div class="label">The goal is connection, not productivity.</div>
+      </div>
+    </div>
+
+    <button class="btn secondary" id="saveSocial">Save weekly event</button>
+  </section>
 
   <section class="card section" id="urusMission">
     <h3>Urus Mission</h3>
@@ -201,11 +379,32 @@
 <script>
 const key = d => 'ascent:'+d;
 const today = new Date().toISOString().slice(0,10);
+const defaultTaskText = [
+  'Follow up with 10 warm 6FCS leads + ask for a deposit',
+  'Complete one credit union / funding action',
+  'Improve one sales, automation, or operating system',
+  'Gym or at least 30 minutes of movement',
+  '10-minute reset + write what matters today'
+];
+
 const stateDefault = {
   target:100, earned:0, tasks:[false,false,false,false,false],
-  goals:{financial:'',business:'',personal:''}, locked:false, score:0
+  taskText:[...defaultTaskText],
+  extraTasks:[],
+  goals:{financial:'',business:'',personal:''},
+  mental:{mood:0,energy:0,note:''},
+  activity:{type:'',minutes:0},
+  locked:false, score:0
 };
 let state = JSON.parse(localStorage.getItem(key(today)) || 'null') || {...stateDefault};
+state.tasks = Array.isArray(state.tasks) ? state.tasks.slice(0,5) : [false,false,false,false,false];
+while(state.tasks.length < 5) state.tasks.push(false);
+state.taskText = Array.isArray(state.taskText) ? state.taskText.slice(0,5) : [...defaultTaskText];
+while(state.taskText.length < 5) state.taskText.push(defaultTaskText[state.taskText.length]);
+state.extraTasks = Array.isArray(state.extraTasks) ? state.extraTasks : [];
+state.mental = state.mental || {mood:0,energy:0,note:''};
+state.activity = state.activity || {type:'',minutes:0};
+
 
 const monthKey = 'ascent:urus:' + today.slice(0,7);
 let urusState = JSON.parse(localStorage.getItem(monthKey) || 'null') || {chefs:0};
@@ -230,6 +429,84 @@ function renderUrus(){
 }
 
 
+const planStart = new Date('2026-09-22T00:00:00');
+function localDateStart(d=new Date()){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+function roadmapInfo(){
+  const diff = Math.floor((localDateStart()-planStart)/(1000*60*60*24));
+  const day = Math.min(90, Math.max(1, diff+1));
+  let phase='Phase 1 • Foundation', focus='Build relationships + seed deposits';
+  if(day>30 && day<=60){ phase='Phase 2 • Funding Setup'; focus='Execute first round of funding'; }
+  if(day>60){ phase='Phase 3 • Capital Stack'; focus='Reach the $100K zone'; }
+  return {day, phase, focus, left:Math.max(0,90-day)};
+}
+
+function mondayOfWeek(d=new Date()){
+  const x=localDateStart(d);
+  const day=x.getDay();
+  const diff=(day===0?-6:1-day);
+  x.setDate(x.getDate()+diff);
+  return x;
+}
+const weekStart = mondayOfWeek();
+const weekKey = 'ascent:social:' + weekStart.toISOString().slice(0,10);
+let socialState = JSON.parse(localStorage.getItem(weekKey) || 'null') || {event:'',date:'',attended:false};
+
+function saveSocialState(){
+  localStorage.setItem(weekKey,JSON.stringify(socialState));
+  renderSocial();
+}
+
+function renderSocial(){
+  $('socialEvent').value=socialState.event||'';
+  $('socialDate').value=socialState.date||'';
+  $('socialAttended').checked=!!socialState.attended;
+
+  const end=new Date(weekStart); end.setDate(end.getDate()+6);
+  $('weekRange').textContent = weekStart.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ' – ' + end.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  $('socialStatus').textContent = socialState.attended ? '1/1' : '0/1';
+  if(socialState.attended){
+    $('socialBadge').textContent='Completed';
+    $('socialBadge').className='small status-good';
+  } else if(socialState.event){
+    $('socialBadge').textContent='Planned';
+    $('socialBadge').className='small status-warn';
+  } else {
+    $('socialBadge').textContent='Not planned';
+    $('socialBadge').className='small status-warn';
+  }
+}
+
+function renderExtraTasks(){
+  const box=$('extraTasks'); box.innerHTML='';
+  state.extraTasks.forEach((item,idx)=>{
+    const row=document.createElement('div');
+    row.className='extra-row';
+    row.innerHTML=`<input type="checkbox" ${item.done?'checked':''} data-extra-check="${idx}">
+      <div style="flex:1">${item.text}</div>
+      <button class="delete-mini" data-extra-del="${idx}">Delete</button>`;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('[data-extra-check]').forEach(el=>{
+    el.onchange=()=>{
+      const i=Number(el.dataset.extraCheck);
+      state.extraTasks[i].done=el.checked; persist();
+    };
+  });
+  box.querySelectorAll('[data-extra-del]').forEach(el=>{
+    el.onclick=()=>{
+      const i=Number(el.dataset.extraDel);
+      state.extraTasks.splice(i,1); persist();
+    };
+  });
+}
+
+function setChipGroup(selector, value, attr){
+  document.querySelectorAll(selector).forEach(btn=>{
+    btn.classList.toggle('active', Number(btn.dataset[attr])===Number(value));
+  });
+}
+
+
 const $ = id => document.getElementById(id);
 $('dateLabel').textContent = new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
 $('targetInput').value = state.target;
@@ -238,6 +515,12 @@ $('earnedInput').value = state.earned;
   const k=['financial','business','personal'][i]; $(id).value=state.goals[k]||'';
 });
 state.tasks.forEach((v,i)=>$('t'+(i+1)).checked=v);
+state.taskText.forEach((v,i)=>$('taskText'+(i+1)).value=v);
+$('mindNote').value=state.mental.note||'';
+$('activityType').value=state.activity.type||'';
+$('activityMinutes').value=state.activity.minutes||0;
+setChipGroup('[data-mood]',state.mental.mood,'mood');
+setChipGroup('[data-energy]',state.mental.energy,'energy');
 
 function calcScore(){
   const moneyPct = Math.min(state.earned / Math.max(state.target,100),1);
@@ -259,6 +542,22 @@ function render(){
   $('moneyBar').style.width=Math.min(100,(state.earned/Math.max(state.target,100))*100)+'%';
   renderHistory();
   $('streak').textContent=calcStreak();
+  $('missionDone').textContent=done;
+  renderExtraTasks();
+
+  const ri=roadmapInfo();
+  $('roadmapDay').textContent=ri.day;
+  $('roadmapBar').style.width=(ri.day/90*100)+'%';
+  $('phasePill').textContent=ri.phase;
+  $('phaseFocus').textContent=ri.focus;
+  $('daysLeft90').textContent=ri.left+' days left';
+
+  const mins=Math.max(0,Number(state.activity.minutes||0));
+  $('activityBar').style.width=Math.min(100,(mins/30)*100)+'%';
+  $('activityStatus').textContent=mins+' / 30';
+
+  renderUrus();
+  renderSocial();
 }
 function calcStreak(){
   let s=0; let d=new Date();
@@ -291,6 +590,51 @@ $('saveMoney').onclick=()=>{
 for(let i=1;i<=5;i++){
   $('t'+i).onchange=()=>{ state.tasks[i-1]=$('t'+i).checked; persist(); };
 }
+$('saveMission').onclick=()=>{
+  state.taskText=[1,2,3,4,5].map(i=>$('taskText'+i).value.trim()||defaultTaskText[i-1]);
+  persist();
+};
+$('addExtraTask').onclick=()=>{
+  const text=$('extraTaskInput').value.trim();
+  if(!text) return;
+  state.extraTasks.push({text,done:false});
+  $('extraTaskInput').value='';
+  persist();
+};
+
+document.querySelectorAll('[data-mood]').forEach(btn=>{
+  btn.onclick=()=>{
+    state.mental.mood=Number(btn.dataset.mood);
+    setChipGroup('[data-mood]',state.mental.mood,'mood');
+    persist();
+  };
+});
+document.querySelectorAll('[data-energy]').forEach(btn=>{
+  btn.onclick=()=>{
+    state.mental.energy=Number(btn.dataset.energy);
+    setChipGroup('[data-energy]',state.mental.energy,'energy');
+    persist();
+  };
+});
+$('saveMind').onclick=()=>{
+  state.mental.note=$('mindNote').value.trim();
+  persist();
+};
+$('saveActivity').onclick=()=>{
+  state.activity.type=$('activityType').value.trim();
+  state.activity.minutes=Math.max(0,Number($('activityMinutes').value||0));
+  if(state.activity.minutes>=30) state.tasks[3]=true;
+  persist();
+  $('t4').checked=state.tasks[3];
+};
+$('saveSocial').onclick=()=>{
+  socialState={
+    event:$('socialEvent').value.trim(),
+    date:$('socialDate').value,
+    attended:$('socialAttended').checked
+  };
+  saveSocialState();
+};
 $('saveGoals').onclick=()=>{
   state.goals={
     financial:$('goalFinancial').value.trim(),
@@ -305,7 +649,15 @@ $('closeDay').onclick=()=>{
 };
 $('resetToday').onclick=()=>{
   if(confirm('Reset only today?')){
-    state={...stateDefault,tasks:[false,false,false,false,false],goals:{financial:'',business:'',personal:''}};
+    state={
+      ...stateDefault,
+      tasks:[false,false,false,false,false],
+      taskText:[...defaultTaskText],
+      extraTasks:[],
+      goals:{financial:'',business:'',personal:''},
+      mental:{mood:0,energy:0,note:''},
+      activity:{type:'',minutes:0}
+    };
     localStorage.setItem(key(today),JSON.stringify(state)); location.reload();
   }
 };
