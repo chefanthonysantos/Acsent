@@ -147,6 +147,38 @@
     <button class="btn secondary" id="saveGoals">Save today's goals</button>
   </section>
 
+
+  <section class="card section" id="urusMission">
+    <h3>Urus Mission</h3>
+    <div class="note">Prove the carrying cost before the settlement arrives. 4 chefs covers the estimated payment + insurance. 5 chefs is the ownership test.</div>
+
+    <div style="margin-top:14px">
+      <div class="label">THIS MONTH</div>
+      <div class="big"><span id="urusChefs">0</span> / 5 chefs</div>
+      <div class="progress"><div class="bar" id="urusBar"></div></div>
+      <div class="small"><span id="urusRevenue">$0</span> in 6FCS enrollment revenue at $997 each</div>
+    </div>
+
+    <div class="grid" style="margin-top:14px">
+      <div class="card" style="padding:13px">
+        <div class="label">4 CHEFS</div>
+        <div class="big" style="font-size:22px">$3,988</div>
+        <div class="small">Payment + insurance test</div>
+      </div>
+      <div class="card" style="padding:13px">
+        <div class="label">5 CHEFS</div>
+        <div class="big" style="font-size:22px">$4,985</div>
+        <div class="small">Full ownership test</div>
+      </div>
+    </div>
+
+    <div class="money-row" style="margin-top:14px">
+      <button class="btn secondary" id="urusMinus" style="margin-top:0">− Chef</button>
+      <button class="btn" id="urusPlus" style="margin-top:0">+ Chef</button>
+    </div>
+    <div class="note" id="urusMessage" style="margin-top:12px"></div>
+  </section>
+
   <section class="card section">
     <h3>7-day scoreboard</h3>
     <div class="history" id="history"></div>
@@ -174,6 +206,29 @@ const stateDefault = {
   goals:{financial:'',business:'',personal:''}, locked:false, score:0
 };
 let state = JSON.parse(localStorage.getItem(key(today)) || 'null') || {...stateDefault};
+
+const monthKey = 'ascent:urus:' + today.slice(0,7);
+let urusState = JSON.parse(localStorage.getItem(monthKey) || 'null') || {chefs:0};
+
+function saveUrus(){
+  localStorage.setItem(monthKey, JSON.stringify(urusState));
+  renderUrus();
+}
+
+function renderUrus(){
+  const chefs = Math.max(0, Number(urusState.chefs || 0));
+  const revenue = chefs * 997;
+  $('urusChefs').textContent = chefs;
+  $('urusRevenue').textContent = '$' + revenue.toLocaleString();
+  $('urusBar').style.width = Math.min(100, (chefs/5)*100) + '%';
+
+  let msg = 'Start the proof. Every signed chef moves the car from emotion to math.';
+  if (chefs >= 5) msg = 'Ownership test passed for this month: 5+ chefs signed.';
+  else if (chefs >= 4) msg = 'Payment + insurance test reached. One more chef passes the full ownership test.';
+  else if (chefs >= 1) msg = `${5-chefs} more chef${5-chefs===1?'':'s'} to pass the ownership test.`;
+  $('urusMessage').textContent = msg;
+}
+
 
 const $ = id => document.getElementById(id);
 $('dateLabel').textContent = new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
@@ -254,6 +309,9 @@ $('resetToday').onclick=()=>{
     localStorage.setItem(key(today),JSON.stringify(state)); location.reload();
   }
 };
+
+$('urusPlus').onclick=()=>{ urusState.chefs=Math.max(0,Number(urusState.chefs||0))+1; saveUrus(); };
+$('urusMinus').onclick=()=>{ urusState.chefs=Math.max(0,Number(urusState.chefs||0)-1); saveUrus(); };
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
 render();
