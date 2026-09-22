@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0c" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Ascent</title>
+  <style>
+    :root{
+      --bg:#0b0b0c; --card:#151517; --line:#27272a; --text:#f4f4f5; --muted:#9ca3af;
+      --good:#39d98a; --warn:#f6c85f; --bad:#ff6b6b; --accent:#8b5cf6;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:linear-gradient(180deg,#0b0b0c 0%,#111114 100%);
+      color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+      min-height:100vh;
+    }
+    .wrap{max-width:680px;margin:0 auto;padding:22px 16px 120px}
+    .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{font-size:32px;margin:0;letter-spacing:-1px}
+    .date{font-size:13px;color:var(--muted)}
+    .hero{background:radial-gradient(circle at top right,#2a2140 0%,#17171a 42%,#121214 100%);
+      border:1px solid var(--line);border-radius:24px;padding:20px;margin-bottom:14px}
+    .hero-grid{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+    .ring{width:140px;height:140px;border-radius:50%;display:grid;place-items:center;
+      background:conic-gradient(var(--good) var(--p,0%),#2c2c30 0);
+      position:relative}
+    .ring:after{content:"";position:absolute;inset:12px;border-radius:50%;background:#121214}
+    .score{z-index:1;text-align:center}
+    .score .n{font-size:38px;font-weight:800;line-height:1}
+    .score .l{font-size:12px;color:var(--muted);margin-top:5px}
+    .hero h2{margin:0 0 8px;font-size:18px}
+    .hero p{margin:0;color:var(--muted);line-height:1.4}
+    .money{font-size:34px;font-weight:800;margin-top:10px}
+    .progress{height:12px;background:#2a2a2f;border-radius:999px;overflow:hidden;margin:10px 0 6px}
+    .bar{height:100%;background:var(--good);width:0%}
+    .small{font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
+    .card h3{margin:0 0 10px;font-size:15px}
+    .big{font-size:28px;font-weight:800}
+    .label{font-size:12px;color:var(--muted)}
+    .section{margin-top:14px}
+    .section-title{font-size:15px;margin:0 0 10px;color:#d4d4d8}
+    .task{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid #222226}
+    .task:last-child{border-bottom:none}
+    input[type="checkbox"]{width:22px;height:22px;accent-color:var(--good);margin-top:1px}
+    input, button, textarea{
+      font:inherit;
+    }
+    .input{
+      width:100%;background:#101012;border:1px solid #303036;color:var(--text);
+      border-radius:14px;padding:12px 13px;outline:none;
+    }
+    .money-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{
+      width:100%;border:none;border-radius:14px;padding:13px 14px;font-weight:700;
+      background:var(--good);color:#06130c;margin-top:10px
+    }
+    .btn.secondary{background:#242429;color:var(--text);border:1px solid #34343a}
+    .btn.danger{background:#2a1717;color:#ffaaaa;border:1px solid #543030}
+    .history{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:10px}
+    .day{background:#111113;border:1px solid #29292e;border-radius:14px;padding:9px 4px;text-align:center}
+    .day .d{font-size:11px;color:var(--muted)}
+    .day .s{font-weight:800;margin-top:5px}
+    .footer-nav{
+      position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+      width:min(92%,650px);background:rgba(20,20,22,.92);backdrop-filter:blur(16px);
+      border:1px solid #2e2e33;border-radius:22px;padding:10px 12px;
+      display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px
+    }
+    .navbtn{background:#1d1d21;color:#d4d4d8;border:none;border-radius:14px;padding:10px 6px;font-size:12px}
+    .streak{color:#ffb45c}
+    .note{font-size:13px;color:var(--muted);line-height:1.45}
+    @media(max-width:500px){.hero-grid{grid-template-columns:1fr}.ring{margin:auto}.grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Ascent</h1>
+      <div class="date" id="dateLabel"></div>
+    </div>
+    <div class="streak">🔥 <span id="streak">0</span> day streak</div>
+  </div>
+
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="ring" id="scoreRing" style="--p:0%">
+        <div class="score"><div class="n" id="scoreNumber">0</div><div class="l">ASCENT SCORE</div></div>
+      </div>
+      <div>
+        <h2>Today's money goal</h2>
+        <div class="money">$<span id="earnedDisplay">0</span> / $<span id="targetDisplay">100</span></div>
+        <div class="progress"><div class="bar" id="moneyBar"></div></div>
+        <div class="small">Your absolute floor is $100. Your score rewards execution too, not just cash timing.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">PROMISES KEPT</div>
+      <div class="big"><span id="promisesKept">0</span>/5</div>
+    </div>
+    <div class="card">
+      <div class="label">ACTION SCORE</div>
+      <div class="big"><span id="actionScore">0</span>/50</div>
+    </div>
+  </div>
+
+  <section class="card section">
+    <h3>Money scoreboard</h3>
+    <div class="money-row">
+      <div>
+        <div class="label">Today's target</div>
+        <input class="input" id="targetInput" type="number" min="100" step="50" value="100">
+      </div>
+      <div>
+        <div class="label">Revenue collected</div>
+        <input class="input" id="earnedInput" type="number" min="0" step="25" value="0">
+      </div>
+    </div>
+    <button class="btn" id="saveMoney">Update scoreboard</button>
+  </section>
+
+  <section class="card section">
+    <h3>Today's commitments</h3>
+    <div class="task"><input type="checkbox" id="t1"><div><div>Train / gym</div><div class="label">Protect the routine.</div></div></div>
+    <div class="task"><input type="checkbox" id="t2"><div><div>Revenue-producing action</div><div class="label">Calls, follow-ups, deposit asks, outreach.</div></div></div>
+    <div class="task"><input type="checkbox" id="t3"><div><div>Move the business forward</div><div class="label">Automation, content, systems, offer improvement.</div></div></div>
+    <div class="task"><input type="checkbox" id="t4"><div><div>Personal win</div><div class="label">Something that improves your life outside work.</div></div></div>
+    <div class="task"><input type="checkbox" id="t5"><div><div>Close the day intentionally</div><div class="label">Review numbers and set tomorrow's target.</div></div></div>
+  </section>
+
+  <section class="card section">
+    <h3>Today's 3 wins</h3>
+    <div class="label">Financial</div>
+    <input class="input" id="goalFinancial" placeholder="Example: collect at least $100">
+    <div class="label" style="margin-top:10px">Business</div>
+    <input class="input" id="goalBusiness" placeholder="Example: follow up with 20 chef leads">
+    <div class="label" style="margin-top:10px">Personal</div>
+    <input class="input" id="goalPersonal" placeholder="Example: gym before 9 AM">
+    <button class="btn secondary" id="saveGoals">Save today's goals</button>
+  </section>
+
+  <section class="card section">
+    <h3>7-day scoreboard</h3>
+    <div class="history" id="history"></div>
+  </section>
+
+  <section class="card section">
+    <h3>Daily rule</h3>
+    <div class="note">A slow revenue day is not an automatic failure. Ascent separates outcome from execution. You can miss the money target and still earn points for doing the work that creates tomorrow's deposits.</div>
+    <button class="btn" id="closeDay">Lock today's score</button>
+    <button class="btn danger" id="resetToday">Reset today</button>
+  </section>
+</div>
+
+<div class="footer-nav">
+  <button class="navbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Today</button>
+  <button class="navbtn" onclick="document.getElementById('history').scrollIntoView({behavior:'smooth'})">History</button>
+  <button class="navbtn" onclick="document.getElementById('goalFinancial').scrollIntoView({behavior:'smooth'})">Goals</button>
+</div>
+
+<script>
+const key = d => 'ascent:'+d;
+const today = new Date().toISOString().slice(0,10);
+const stateDefault = {
+  target:100, earned:0, tasks:[false,false,false,false,false],
+  goals:{financial:'',business:'',personal:''}, locked:false, score:0
+};
+let state = JSON.parse(localStorage.getItem(key(today)) || 'null') || {...stateDefault};
+
+const $ = id => document.getElementById(id);
+$('dateLabel').textContent = new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+$('targetInput').value = state.target;
+$('earnedInput').value = state.earned;
+['goalFinancial','goalBusiness','goalPersonal'].forEach((id,i)=>{
+  const k=['financial','business','personal'][i]; $(id).value=state.goals[k]||'';
+});
+state.tasks.forEach((v,i)=>$('t'+(i+1)).checked=v);
+
+function calcScore(){
+  const moneyPct = Math.min(state.earned / Math.max(state.target,100),1);
+  const outcome = Math.round(moneyPct*50);
+  const done = state.tasks.filter(Boolean).length;
+  const action = done*10;
+  return Math.min(100,outcome+action);
+}
+function persist(){ localStorage.setItem(key(today),JSON.stringify(state)); render(); }
+function render(){
+  state.score=calcScore();
+  const done=state.tasks.filter(Boolean).length;
+  $('scoreNumber').textContent=state.score;
+  $('scoreRing').style.setProperty('--p',state.score+'%');
+  $('promisesKept').textContent=done;
+  $('actionScore').textContent=done*10;
+  $('earnedDisplay').textContent=Number(state.earned).toLocaleString();
+  $('targetDisplay').textContent=Number(state.target).toLocaleString();
+  $('moneyBar').style.width=Math.min(100,(state.earned/Math.max(state.target,100))*100)+'%';
+  renderHistory();
+  $('streak').textContent=calcStreak();
+}
+function calcStreak(){
+  let s=0; let d=new Date();
+  for(let i=0;i<60;i++){
+    const ds=d.toISOString().slice(0,10);
+    const x=JSON.parse(localStorage.getItem(key(ds))||'null');
+    if(x && x.locked && (x.score||0)>=70) s++;
+    else if(i===0 && ds===today && !x?.locked) {}
+    else break;
+    d.setDate(d.getDate()-1);
+  }
+  return s;
+}
+function renderHistory(){
+  const box=$('history'); box.innerHTML='';
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const x=JSON.parse(localStorage.getItem(key(ds))||'null');
+    const div=document.createElement('div'); div.className='day';
+    div.innerHTML=`<div class="d">${d.toLocaleDateString(undefined,{weekday:'short'})}</div><div class="s">${x?.locked ? (x.score||0) : '—'}</div>`;
+    box.appendChild(div);
+  }
+}
+$('saveMoney').onclick=()=>{
+  state.target=Math.max(100,Number($('targetInput').value||100));
+  state.earned=Math.max(0,Number($('earnedInput').value||0));
+  persist();
+};
+for(let i=1;i<=5;i++){
+  $('t'+i).onchange=()=>{ state.tasks[i-1]=$('t'+i).checked; persist(); };
+}
+$('saveGoals').onclick=()=>{
+  state.goals={
+    financial:$('goalFinancial').value.trim(),
+    business:$('goalBusiness').value.trim(),
+    personal:$('goalPersonal').value.trim()
+  };
+  persist();
+};
+$('closeDay').onclick=()=>{
+  state.score=calcScore(); state.locked=true; persist();
+  alert(`Day locked at ${state.score}/100.`);
+};
+$('resetToday').onclick=()=>{
+  if(confirm('Reset only today?')){
+    state={...stateDefault,tasks:[false,false,false,false,false],goals:{financial:'',business:'',personal:''}};
+    localStorage.setItem(key(today),JSON.stringify(state)); location.reload();
+  }
+};
+
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
+render();
+</script>
+</body>
+</html>
